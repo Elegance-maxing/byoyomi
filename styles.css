@@ -312,6 +312,9 @@ body[data-state="paused"] .clock .time {
 .modal-body section { display: flex; flex-direction: column; gap: 6px; }
 .modal-body h3 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-dim); font-weight: 600; }
 .modal-body p.hint { margin: 0; font-size: 11px; color: var(--fg-faint); }
+.credit { margin: 8px 0 0; text-align: center; font-size: 11px; color: var(--fg-faint); }
+.credit a { color: var(--fg-dim); text-decoration: none; }
+.credit a:hover { color: var(--fg); text-decoration: underline; }
 
 .row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
 .row.wrap { flex-wrap: wrap; }
