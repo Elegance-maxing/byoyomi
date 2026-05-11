@@ -1,0 +1,19 @@
+{
+  "name": "Byoyomi",
+  "short_name": "Byoyomi",
+  "description": "Track focused work vs procrastination time, chess-clock style.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#2a2a2a",
+  "theme_color": "#2a2a2a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

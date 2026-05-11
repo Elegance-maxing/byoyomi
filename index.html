@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2a2a2a" />
+  <title>Byoyomi</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-state="paused">
+  <main id="viewport" aria-label="Click to flip between working and procrastinating">
+    <div class="bar top">
+      <span id="state-indicator" class="state-indicator">paused</span>
+      <span class="spacer"></span>
+      <button id="pause-btn" class="icon-btn" type="button" title="Pause/Resume">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path id="pause-icon-path" fill="currentColor" d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button id="popout-btn" class="icon-btn" type="button" title="Pop out" hidden>
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M14 3v2h4.59l-7.3 7.29 1.42 1.42L20 6.41V11h2V3h-8zM19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7z"/></svg>
+      </button>
+      <button id="stats-btn" class="icon-btn" type="button" title="Stats">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M4 20h2v-7H4v7zm6 0h2V4h-2v16zm6 0h2v-11h-2v11zm6 0v-2H2v2h20z"/></svg>
+      </button>
+      <button id="settings-btn" class="icon-btn" type="button" title="Settings">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19.14 12.94a7.07 7.07 0 0 0 0-1.88l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7 7 0 0 0-1.63-.94l-.36-2.54A.5.5 0 0 0 13.88 2h-3.76a.5.5 0 0 0-.5.42l-.36 2.54a7 7 0 0 0-1.63.94l-2.39-.96a.5.5 0 0 0-.61.22L2.71 8.48a.5.5 0 0 0 .12.64L4.86 10.7a7.07 7.07 0 0 0 0 1.88L2.83 14.16a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .61.22l2.39-.96a7 7 0 0 0 1.63.94l.36 2.54a.5.5 0 0 0 .5.42h3.76a.5.5 0 0 0 .5-.42l.36-2.54a7 7 0 0 0 1.63-.94l2.39.96a.5.5 0 0 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5z"/></svg>
+      </button>
+    </div>
+
+    <div class="clocks">
+      <div id="work-clock" class="clock work">
+        <div class="label">work</div>
+        <div class="time" id="work-time">00:00:00</div>
+      </div>
+      <div id="proc-clock" class="clock proc">
+        <div class="label">procrastinate</div>
+        <div class="time" id="proc-time">00:00:00</div>
+      </div>
+    </div>
+
+    <div id="pip-placeholder" class="pip-placeholder" hidden>
+      <button type="button" id="pip-return-btn">clock is in pop-out — click to bring back</button>
+    </div>
+
+    <div class="bar bottom">
+      <div class="progress" id="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-text" id="progress-text">0h 0m / 4h</div>
+      </div>
+    </div>
+
+    <div id="task-chips-wrap" class="task-chips-wrap" hidden>
+      <div id="task-chips" class="task-chips"></div>
+    </div>
+
+    <div id="reason-picker" class="reason-picker" hidden>
+      <div class="reason-picker-inner">
+        <span class="reason-label">why?</span>
+        <div id="reason-buttons" class="reason-buttons"></div>
+        <button class="reason-dismiss" id="reason-dismiss" type="button" title="Dismiss">x</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+  </main>
+
+  <div id="settings-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <header class="modal-header">
+        <h2 id="settings-title">Settings</h2>
+        <button class="icon-btn" id="settings-close" type="button" data-close title="Close">x</button>
+      </header>
+      <div class="modal-body">
+        <section>
+          <h3>Daily goal</h3>
+          <div class="row">
+            <input id="goal-hours" type="number" min="0" max="23" step="1" /> h
+            <input id="goal-minutes" type="number" min="0" max="59" step="1" /> m
+          </div>
+        </section>
+
+        <section>
+          <h3>Custom hotkey</h3>
+          <div class="row">
+            <button id="hotkey-bind" type="button" class="btn">Bind key</button>
+            <span id="hotkey-display" class="muted">none</span>
+            <button id="hotkey-clear" type="button" class="btn ghost">Clear</button>
+          </div>
+          <p class="hint">Starts the session when paused; flips work/procrastinate when running. Ignored while typing in inputs.</p>
+        </section>
+
+        <section>
+          <h3>Sound on flip</h3>
+          <label class="row"><input id="sound-toggle" type="checkbox" /> <span>Play a soft click when flipping</span></label>
+        </section>
+
+        <section>
+          <h3>Idle detection</h3>
+          <div class="row">
+            <label><input id="idle-enabled" type="checkbox" /> Enabled</label>
+            <input id="idle-minutes" type="number" min="1" max="120" step="1" /> minutes
+          </div>
+          <p class="hint">Auto-pauses the session after this period of no input. Resume manually.</p>
+        </section>
+
+        <section>
+          <h3>Procrastination reasons</h3>
+          <div class="row">
+            <input id="reason-new" type="text" placeholder="add reason" maxlength="20" />
+            <button id="reason-add" type="button" class="btn">Add</button>
+          </div>
+          <ul id="reason-list" class="chip-list"></ul>
+        </section>
+
+        <section>
+          <h3>Tasks</h3>
+          <div class="row">
+            <input id="task-new" type="text" placeholder="add task" maxlength="30" />
+            <button id="task-add" type="button" class="btn">Add</button>
+          </div>
+          <ul id="task-list" class="chip-list"></ul>
+        </section>
+
+        <section>
+          <h3>Day & data</h3>
+          <div class="row wrap">
+            <button id="new-day-btn" type="button" class="btn">New Day</button>
+            <button id="export-btn" type="button" class="btn">Export JSON</button>
+            <button id="reset-btn" type="button" class="btn danger">Reset all data</button>
+          </div>
+          <p class="hint">New Day archives today's totals and resets counters. There is no automatic rollover.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="stats-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+      <header class="modal-header">
+        <h2 id="stats-title">Stats</h2>
+        <button class="icon-btn" id="stats-close" type="button" data-close title="Close">x</button>
+      </header>
+      <div class="modal-body">
+        <section>
+          <h3>Today</h3>
+          <div id="stats-today" class="summary"></div>
+          <div class="sub-block">
+            <h4>By task</h4>
+            <ul id="stats-today-tasks" class="kv-list"></ul>
+          </div>
+          <div class="sub-block">
+            <h4>By reason</h4>
+            <ul id="stats-today-reasons" class="kv-list"></ul>
+          </div>
+        </section>
+
+        <section>
+          <h3>Yesterday</h3>
+          <div id="stats-yesterday" class="summary muted"></div>
+          <div class="sub-block">
+            <h4>By task</h4>
+            <ul id="stats-yesterday-tasks" class="kv-list"></ul>
+          </div>
+          <div class="sub-block">
+            <h4>By reason</h4>
+            <ul id="stats-yesterday-reasons" class="kv-list"></ul>
+          </div>
+        </section>
+
+        <section>
+          <h3>History</h3>
+          <ul id="history-list" class="history-list"></ul>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
